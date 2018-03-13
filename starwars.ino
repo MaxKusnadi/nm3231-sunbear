@@ -7,6 +7,9 @@ const int buttonAutoRandomPin = 4;
 const int pump1 = 12;
 const int pump2 = 11;
 const int pump3 = 10;
+const int led1 = 5;
+const int led2 = 6;
+const int led3 = 7;
 
 // variables will change:
 int randomPump = 0;
@@ -26,6 +29,9 @@ int refPump3 = 0;
 void setup() {
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(buttonConstantPin, INPUT_PULLUP);
   pinMode(buttonAutoRandomPin, INPUT_PULLUP);
@@ -110,10 +116,17 @@ void loop() {
     digitalWrite(pump1, HIGH);
     digitalWrite(pump2, HIGH);
     digitalWrite(pump3, HIGH);
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, HIGH);
+    digitalWrite(led3, HIGH);
+    
   } else {
     digitalWrite(pump1, LOW);
     digitalWrite(pump2, LOW);
     digitalWrite(pump3, LOW);
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, LOW);
+    digitalWrite(led3, LOW);
   }
   
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
@@ -134,12 +147,19 @@ void randomizePump(){
   Serial.print("Pump number: ");
   Serial.println(randomPump + 1);
   if (randomPump == 0){
+    digitalWrite(led1, HIGH);
     activatePump(pump1);
   }else if (randomPump == 1){
+    digitalWrite(led2, HIGH);
     activatePump(pump2);
   }else{
+    digitalWrite(led3, HIGH);
     activatePump(pump3);
   }
   delay(3000);
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+  
 }
 
