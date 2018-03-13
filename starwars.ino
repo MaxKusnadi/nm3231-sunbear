@@ -1,33 +1,41 @@
 #include <ADCTouch.h>
 
-const int buttonPin = 12;     // the number of the pushbutton pin
+const int buttonPin = 3;     // the number of the pushbutton pin
 const int ledPin =  13;      // the number of the LED pin
 const int buttonConstantPin = 2;
-const int buttonAutoRandomPin = 10;
-const int pump1 = 9;
-const int pump2 = 5;
-const int pump3 = 8;
+const int buttonAutoRandomPin = 4;
+const int pump1 = 12;
+const int pump2 = 11;
+const int pump3 = 10;
 
 // variables will change:
 int randomPump = 0;
 int buttonState = 0;         // variable for reading the pushbutton status
 int buttonConstantState = 0;         // variable for reading the pushbutton status
 int buttonAutoRandomState = 0;
+
 bool autoOn = false;
-bool touched = false;
-int ref = 0;
+bool touchedPump1 = false;
+bool touchedPump2 = false;
+bool touchedPump3 = false;
+
+int refPump1 = 0;
+int refPump2 = 0;
+int refPump3 = 0;
 
 void setup() {
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
-  // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(buttonConstantPin, INPUT_PULLUP);
   pinMode(buttonAutoRandomPin, INPUT_PULLUP);
   pinMode(pump1, OUTPUT);
   pinMode(pump2, OUTPUT);
   pinMode(pump3, OUTPUT);
-  ref = ADCTouch.read(A0, 500);    //create reference values to
+  
+  refPump1 = ADCTouch.read(A0, 500);    //create reference values to
+  refPump2 = ADCTouch.read(A1, 500);    //create reference values to
+  refPump3 = ADCTouch.read(A2, 500);    //create reference values to
   Serial.begin(9600);
 }
 
@@ -36,13 +44,37 @@ void loop() {
   buttonState = digitalRead(buttonPin);
   buttonConstantState = digitalRead(buttonConstantPin);
   buttonAutoRandomState = digitalRead(buttonAutoRandomPin);
-  int touchValue = ADCTouch.read(A0);   //no second parameter
-  touchValue -= ref;       //remove offset
-  Serial.println(touchValue);
-  if(touchValue > 20){
-    touched = true;
+  
+  int touchValuePump1 = ADCTouch.read(A0);
+  int touchValuePump2 = ADCTouch.read(A1);
+  int touchValuePump3 = ADCTouch.read(A2);
+  touchValuePump1 -= refPump1;
+  touchValuePump2 -= refPump2;
+  touchValuePump3 -= refPump3;
+
+  Serial.print("Touch value pump 1: ");
+  Serial.println(touchValuePump1);
+  Serial.print("Touch value pump 2: ");
+  Serial.println(touchValuePump2);
+  Serial.print("Touch value pump 3: ");
+  Serial.println(touchValuePump3);
+  
+  if(touchValuePump1 > 20){
+    touchedPump1 = true;
   }else{
-    touched = false;
+    touchedPump1 = false;
+  }
+
+  if(touchValuePump2 > 20){
+    touchedPump2 = true;
+  }else{
+    touchedPump2 = false;
+  }
+
+  if(touchValuePump3 > 20){
+    touchedPump3 = true;
+  }else{
+    touchedPump3 = false;
   }
  
   if(buttonAutoRandomState == LOW){
@@ -58,9 +90,18 @@ void loop() {
   }
 
   if(autoOn == true){
+    bool touched;
+    if(randomPump == 0){
+      touched = touchedPump1;
+    }else if(randomPump == 1){
+      touched = touchedPump2;
+    }else{
+      touched = touchedPump3;
+    }
+    
     if(touched == true){
-      randomizePump();
       Serial.println("Auto Mode Continued"); 
+      randomizePump();
     }
   }
 
@@ -90,7 +131,8 @@ void activatePump(int pump){
 
 void randomizePump(){
   randomPump = random(3);
-  Serial.println(randomPump);
+  Serial.print("Pump number: ");
+  Serial.println(randomPump + 1);
   if (randomPump == 0){
     activatePump(pump1);
   }else if (randomPump == 1){
