@@ -1,5 +1,11 @@
 #include <ADCTouch.h>
+#include<FastLED.h>
+#define NUM_LEDS 100
 
+CRGBArray<NUM_LEDS> leds;
+
+// Delays
+const int delay_time(3000);
 // Buttons
 const int buttonConstantPin = 2;
 const int buttonManualRandomPin = 3;     // the number of the pushbutton pin
@@ -10,8 +16,7 @@ const int pump1 = 12;
 const int pump2 = 11;
 
 // LED
-const int led1 = 7;
-const int led2 = 6;
+const int led = 5;
 
 // State of the buttons: pressed or not
 int randomPump = 0;
@@ -30,8 +35,7 @@ int refPump2 = 0;
 
 void setup() {
   // initialize the LED pins:
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
+  FastLED.addLeds<NEOPIXEL,led>(leds, NUM_LEDS); 
 
   // initialize the button pins:
   pinMode(buttonManualRandomPin, INPUT_PULLUP);
@@ -109,14 +113,14 @@ void loop() {
     Serial.println("Constant Mode Activated");
     digitalWrite(pump1, HIGH);
     digitalWrite(pump2, HIGH);
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, HIGH);
+    light_led(0);
+    light_led(1);
     
   } else {
     digitalWrite(pump1, LOW);
     digitalWrite(pump2, LOW);
-    digitalWrite(led1, LOW);
-    digitalWrite(led2, LOW);
+    off_led(0);
+    off_led(1);
   }
   
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
@@ -128,8 +132,10 @@ void loop() {
 
 void activatePump(int pump){
   digitalWrite(pump, HIGH);
-  delay(3000);
+  light_led(randomPump);
+  delay(delay_time);
   digitalWrite(pump, LOW);
+  off_led(randomPump);
 }
 
 void randomizePump(){
@@ -137,15 +143,37 @@ void randomizePump(){
   Serial.print("Pump number: ");
   Serial.println(randomPump + 1);
   if (randomPump == 0){
-    digitalWrite(led1, HIGH);
     activatePump(pump1);
   }else{
-    digitalWrite(led2, HIGH);
     activatePump(pump2);
   }
-  delay(3000);
-  digitalWrite(led1, LOW);
-  digitalWrite(led2, LOW);
-  
+  delay(delay_time);
 }
 
+void light_led(int pump){
+  if(pump == 0){
+    for(int i = 0; i < 10; i++) {   
+      leds[i] = CRGB::Red;
+    }
+    FastLED.show();
+  }else{
+    for(int i = 25; i < 35; i++) {   
+      leds[i] = CRGB::Blue;
+    }
+    FastLED.show();
+  }
+}
+
+void off_led(int pump){
+  if(pump == 0){
+    for(int i = 0; i < 10; i++) {   
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
+  }else{
+    for(int i = 25; i < 35; i++) {   
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
+  }
+}
