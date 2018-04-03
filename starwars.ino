@@ -51,6 +51,7 @@ void setup() {
   refPump2 = ADCTouch.read(A1, 500);    //create reference values to
   
   Serial.begin(9600);
+  setup_light();
 }
 
 void loop() {
@@ -152,28 +153,52 @@ void randomizePump(){
 
 void light_led(int pump){
   if(pump == 0){
-    for(int i = 0; i < 10; i++) {   
-      leds[i] = CRGB::Red;
+      for(int i = 30; i < 50; i++) {   
+        leds[i] = CRGB::Red;
+      }
+      FastLED.show();
+    }else{
+      for(int i = 80; i < 100; i++) {   
+        leds[i] = CRGB::Blue;
+      }
+      FastLED.show();
+    }
+}
+
+void off_led(int pump){
+  if(pump == 0){
+    for(int i = 30; i < 50; i++) {   
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }else{
-    for(int i = 25; i < 35; i++) {   
-      leds[i] = CRGB::Blue;
+    for(int i = 80; i < 100; i++) {   
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }
 }
 
-void off_led(int pump){
-  if(pump == 0){
-    for(int i = 0; i < 10; i++) {   
-      leds[i] = CRGB::Black;
-    }
-    FastLED.show();
-  }else{
-    for(int i = 25; i < 35; i++) {   
-      leds[i] = CRGB::Black;
-    }
-    FastLED.show();
+void setup_light(){
+  for(int i = 0; i < 100; i++) {   
+    leds[i] = CRGB::Red;
   }
+  FastLED.show();
+  delay(500)
+  for(int i = 0; i < 100; i++) {   
+    leds[i] = CRGB::Black;
+  }
+  FastLED.show();
+  delay(500)
+  for(int i = 0; i < 100; i++) {   
+    leds[i] = CRGB::Red;
+  }
+  FastLED.show();
+  delay(500)
+  for(int i = 0; i < 100; i++) {   
+    leds[i] = CRGB::Black;
+  }
+  FastLED.show();
+  delay(500)
 }
+
