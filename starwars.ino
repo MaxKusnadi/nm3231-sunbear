@@ -2,12 +2,14 @@
 #include<FastLED.h>
 #define NUM_LEDS 100
 
-CRGBArray<NUM_LEDS> leds1;
-CRGBArray<NUM_LEDS> leds2;
+CRGBArray<NUM_LEDS> leds;
 
 // Delays
-const int delay_time = 10000;
-const int pump_time = 3000;
+const int delay_time = 30000;
+const int pump_time = 10000;
+
+// Touch Sensor Sensitivity
+const int sensitivity = 20;
 
 // Buttons
 const int buttonConstantPin = 2;
@@ -21,16 +23,15 @@ const int pump3 = 10;
 const int pump4 = 9;
 
 // LED
-const int led1 = 5;
-const int led2 = 6;
-const int pump_1_start = 33;
-const int pump_1_end = 53;
-const int pump_2_start = 83;
-const int pump_2_end = 100;
-const int pump_3_start = 33;
-const int pump_3_end = 53;
-const int pump_4_start = 83;
-const int pump_4_end = 100;
+const int led = 5;
+const int pump_1_start = 0;
+const int pump_1_end = 4;
+const int pump_2_start = 4;
+const int pump_2_end = 8;
+const int pump_3_start = 8;
+const int pump_3_end = 11;
+const int pump_4_start = 11;
+const int pump_4_end = 14;
 
 // State of the buttons: pressed or not
 int randomPump = 0;
@@ -53,8 +54,7 @@ int refPump4 = 0;
 
 void setup() {
   // initialize the LED pins:
-  FastLED.addLeds<NEOPIXEL,led1>(leds1, NUM_LEDS);
-  FastLED.addLeds<NEOPIXEL,led2>(leds2, NUM_LEDS); 
+  FastLED.addLeds<NEOPIXEL,led>(leds, NUM_LEDS);
 
   // initialize the button pins:
   pinMode(buttonManualRandomPin, INPUT_PULLUP);
@@ -103,25 +103,25 @@ void loop() {
   Serial.print("Touch value pump 4: ");
   Serial.println(touchValuePump4);
   
-  if(touchValuePump1 > 18){
+  if(touchValuePump1 > sensitivity){
     touchedPump1 = true;
   }else{
     touchedPump1 = false;
   }
 
-  if(touchValuePump2 > 18){
+  if(touchValuePump2 > sensitivity){
     touchedPump2 = true;
   }else{
     touchedPump2 = false;
   }
 
-  if(touchValuePump3 > 18){
+  if(touchValuePump3 > sensitivity){
     touchedPump3 = true;
   }else{
     touchedPump3 = false;
   }
 
-  if(touchValuePump4 > 18){
+  if(touchValuePump4 > sensitivity){
     touchedPump4 = true;
   }else{
     touchedPump4 = false;
@@ -195,7 +195,7 @@ void activatePump(int pump){
 }
 
 void randomizePump(){
-  randomPump = random(4);
+  randomPump = random(3);
   Serial.print("Pump number: ");
   Serial.println(randomPump + 1);
   if (randomPump == 0){
@@ -213,22 +213,22 @@ void randomizePump(){
 void light_led(int pump){
   if(pump == 0){
     for(int i = pump_1_start; i < pump_1_end; i++) {   
-      leds1[i] = CRGB::Crimson;
+      leds[i] = CRGB::Crimson;
     }
     FastLED.show();
   }else if(pump == 1){
     for(int i = pump_2_start; i < pump_2_end; i++) {   
-      leds1[i] = CRGB::DeepSkyBlue;
+      leds[i] = CRGB::DeepSkyBlue;
     }
     FastLED.show();
   }else if(pump == 2){
     for(int i = pump_3_start; i < pump_3_end; i++) {   
-      leds2[i] = CRGB::Chocolate;
+      leds[i] = CRGB::Chocolate;
     }
     FastLED.show();
   }else{
     for(int i = pump_4_start; i < pump_4_end; i++) {   
-      leds2[i] = CRGB::DeepPink;
+      leds[i] = CRGB::DeepPink;
     }
     FastLED.show();
   }
@@ -237,22 +237,22 @@ void light_led(int pump){
 void off_led(int pump){
   if(pump == 0){
     for(int i = pump_1_start; i < pump_1_end; i++) {   
-      leds1[i] = CRGB::Black;
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }else if(pump == 1){
     for(int i = pump_2_start; i < pump_2_end; i++) {   
-      leds1[i] = CRGB::Black;
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }else if(pump == 2){
     for(int i = pump_3_start; i < pump_3_end; i++) {   
-      leds2[i] = CRGB::Black;
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }else{
     for(int i = pump_4_start; i < pump_4_end; i++) {   
-      leds2[i] = CRGB::Black;
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
   }
@@ -261,19 +261,13 @@ void off_led(int pump){
 void delay_light(){
   int iteration = delay_time/1000;
   for(int i = 0; i < iteration; i++){
-    for(int i = pump_1_end; i < pump_2_start; i++) {   
-      leds1[i] = CRGB::ForestGreen;
-    }
-    for(int i = pump_3_end; i < pump_4_start; i++) {   
-      leds2[i] = CRGB::ForestGreen;
+    for(int i = pump_1_start; i < pump_4_end; i++) {   
+      leds[i] = CRGB::ForestGreen;
     }
     FastLED.show();
     delay(500);
-    for(int i = pump_1_end; i < pump_2_start; i++) {   
-      leds1[i] = CRGB::Black;
-    }
-    for(int i = pump_3_end; i < pump_4_start; i++) {   
-      leds2[i] = CRGB::Black;
+    for(int i = pump_1_start; i < pump_4_end; i++) {   
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
     delay(500);
@@ -283,14 +277,12 @@ void delay_light(){
 void auto_mode_off_light(){
   for(int i = 0; i < 3; i++){
     for(int i = 0; i < 100; i++) {   
-      leds1[i] = CRGB::DarkOrange;
-      leds2[i] = CRGB::DarkOrange;
+      leds[i] = CRGB::DarkOrange;
     }
     FastLED.show();
     delay(500);
     for(int i = 0; i < 100; i++) {   
-      leds1[i] = CRGB::Black;
-      leds2[i] = CRGB::Black;
+      leds[i] = CRGB::Black;
     }
     FastLED.show();
     delay(500);
@@ -299,26 +291,22 @@ void auto_mode_off_light(){
 
 void setup_light(){
   for(int i = 0; i < 100; i++) {   
-    leds1[i] = CRGB::Red;
-    leds2[i] = CRGB::Red;
+    leds[i] = CRGB::Red;
   }
   FastLED.show();
   delay(500);
   for(int i = 0; i < 100; i++) {   
-    leds1[i] = CRGB::Black;
-    leds2[i] = CRGB::Black;
+    leds[i] = CRGB::Black;
   }
   FastLED.show();
   delay(500);
   for(int i = 0; i < 100; i++) {   
-    leds1[i] = CRGB::Red;
-    leds2[i] = CRGB::Red;
+    leds[i] = CRGB::Red;
   }
   FastLED.show();
   delay(500);
   for(int i = 0; i < 100; i++) {   
-    leds1[i] = CRGB::Black;
-    leds2[i] = CRGB::Black;
+    leds[i] = CRGB::Black;
   }
   FastLED.show();
 }
